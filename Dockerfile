@@ -30,24 +30,29 @@ RUN pip install --no-cache-dir -r ./requirements.txt
 
 # Install Torch, Torchvision, and Torchaudio for CUDA 12.2
 RUN pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu122/torch_stable.html
+RUN pip install --upgrade bitsandbytes
 
-RUN chown -R appuser:appuser /app
+
 
 # delete redundant requirements.txt and sd-scripts directory within the container
-RUN rm -r ./sd-scripts
-RUN rm ./requirements.txt
-
-#Run application as non-root
-USER appuser
+#RUN rm -r ./sd-scripts
+#RUN rm ./requirements.txt
 
 # Copy fluxgym application code
 COPY . ./fluxgym
 
-EXPOSE 7860
+#Run application as non-root
+RUN chown -R appuser:appuser /app
 
+USER appuser
+EXPOSE 7860
 ENV GRADIO_SERVER_NAME="0.0.0.0"
 
 WORKDIR /app/fluxgym
 
+RUN rm docker*
+RUN rm .pl-env.env
+
 # Run fluxgym Python application
 CMD ["python3", "./app.py"]
+#CMD ["sleep", "infinity"]
